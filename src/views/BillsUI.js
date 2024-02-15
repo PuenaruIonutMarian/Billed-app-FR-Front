@@ -52,9 +52,9 @@ export default ({
     return ErrorPage(error)
   }
 
-  
+
   // BUG nr.1 [Bug report] - Bills : Solution - sort the bills by date before returning them
-  //Observation : directly defining the sorting logic within the sort method (if (bills && bills.length) {bills.sort((a, b) => new Date(a.date) - new Date(b.date))), doesn't work as expected because it separates the sorting logic from the sorting operation itself.
+  //Observation : directly defining the sorting logic within the sort method <<<if (bills && bills.length) {bills.sort((a, b) => new Date(a.date) - new Date(b.date))>>> doesn't work as expected because it separates the sorting logic from the sorting operation itself.
 
   // Sort bills by date (from earliest to latest) before rendering
   const compareDates = (a, b) => new Date(b.date) - new Date(a.date);
@@ -64,9 +64,6 @@ export default ({
   } else {
     console.error('No bills available to display');
   }
-
-
-
 
 
   return (`
