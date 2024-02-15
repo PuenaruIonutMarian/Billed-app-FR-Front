@@ -17,14 +17,18 @@ const row = (bill) => {
       </td>
     </tr>
     `)
-  }
+}
 
 const rows = (data) => {
   return (data && data.length) ? data.map(bill => row(bill)).join("") : ""
 }
 
-export default ({ data: bills, loading, error }) => {
-  
+export default ({
+  data: bills,
+  loading,
+  error
+}) => {
+
   const modal = () => (`
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -47,7 +51,24 @@ export default ({ data: bills, loading, error }) => {
   } else if (error) {
     return ErrorPage(error)
   }
+
   
+  // BUG nr.1 [Bug report] - Bills : Solution - sort the bills by date before returning them
+  //Observation : directly defining the sorting logic within the sort method (if (bills && bills.length) {bills.sort((a, b) => new Date(a.date) - new Date(b.date))), doesn't work as expected because it separates the sorting logic from the sorting operation itself.
+
+  // Sort bills by date (from earliest to latest) before rendering
+  const compareDates = (a, b) => new Date(b.date) - new Date(a.date);
+
+  if (bills && bills.length) {
+    bills.sort(compareDates);
+  } else {
+    console.error('No bills available to display');
+  }
+
+
+
+
+
   return (`
     <div class='layout'>
       ${VerticalLayout(120)}
@@ -75,6 +96,5 @@ export default ({ data: bills, loading, error }) => {
         </div>
       </div>
       ${modal()}
-    </div>`
-  )
+    </div>`)
 }
