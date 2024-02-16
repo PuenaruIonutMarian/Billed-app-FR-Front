@@ -145,9 +145,13 @@ export default class {
       this.counter ++
     }
 
-    bills.forEach(bill => {
-      $(`#open-bill${bill.id}`).click((e) => this.handleEditTicket(e, bill, bills))
-    })
+    //BUG nr.4 [Bug Hunt] - Dashboard : Solution -  unbound all click events for each bill
+    // and then immediately rebound them with the event handler
+    bills.forEach((bill) => {
+      $(`#open-bill${bill.id}`).off('click').click((e) =>
+        this.handleEditTicket(e, bill, bills)
+      );
+    });
 
     return bills
 
