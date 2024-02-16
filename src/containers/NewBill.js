@@ -20,6 +20,20 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
+
+    //BUG nr.3 [BUG Hunt] - Bills: Solution - filter the file format before submit
+    // Check if the file extension is jpg, jpeg, or png
+    const justificatifInput = this.document.querySelector(`input[data-testid="file"]`);
+    const validExtensions = ['jpg', 'jpeg', 'png'];
+    const fileExtension = fileName.split('.').pop().toLowerCase();
+    if (!validExtensions.includes(fileExtension)) {
+        justificatifInput.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
+        justificatifInput.reportValidity();
+        justificatifInput.value = '';
+        return;
+    }
+
+
     const formData = new FormData()
     const email = JSON.parse(localStorage.getItem("user")).email
     formData.append('file', file)
