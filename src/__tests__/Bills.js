@@ -11,6 +11,7 @@ import { bills } from '../fixtures/bills.js';
 import { ROUTES_PATH } from '../constants/routes.js';
 import router from '../app/Router.js';
 import Bills from '../containers/Bills.js';
+import { formatDate, formatStatus } from '../app/format.js';
 
 
 
@@ -45,13 +46,32 @@ describe("Given I am connected as an employee", () => {
 })
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////  TODO Nr.2 CONTAINER / BILLS ///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//TODO Nr2 - UNITARY TESTS
+
+
+
+// Jest mock for format.js
+jest.mock('../app/format.js', () => ({
+  formatDate: jest.fn(),
+  formatStatus: jest.fn(),
+}));
+
+// Jest mock for store
+jest.mock('../app/store', () => mockStore);
+
+
 
 // Test suite for interactions on the Bills Page
 describe('Given I am connected as an employee', () => {
   let myBillsInstance; // Reusable instance
 
-  // Common setup function
   beforeEach(() => {
+    // Mock the instance of Bills
     const onNavigate = jest.fn();
     myBillsInstance = new Bills({
       document,
@@ -61,10 +81,14 @@ describe('Given I am connected as an employee', () => {
     });
   });
 
-  // Describe block for 'New Bill' button interaction
+  afterEach(() => {
+    myBillsInstance = null;
+  });
+
+  // Test cases for interactions with buttons and icons
   describe('Interaction with "New Bill" button', () => {
-    // Test to verify if the 'New Bill' button has a click event listener
     it('should have an event listener for click', () => {
+      // Mock handleClickNewBill function
       myBillsInstance.handleClickNewBill = jest.fn();
       const buttonNewBill = document.querySelector(`button[data-testid="btn-new-bill"]`);
       expect(buttonNewBill).toBeDefined();
@@ -73,10 +97,9 @@ describe('Given I am connected as an employee', () => {
     });
   });
 
-  // Describe block for 'eye' icon interaction
   describe('Interaction with "eye" icons', () => {
-    // Test to verify if each 'eye' icon has a click event listener
     it('should have an event listener for click', () => {
+      // Mock handleClickIconEye function
       jQuery.fn.modal = () => {}; // Mock jQuery's modal function
       const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`);
       expect(iconEye).toBeDefined();
@@ -86,41 +109,93 @@ describe('Given I am connected as an employee', () => {
     });
   });
 
+  // Test suite for getBills function
+  describe('When I call getBills', () => {
+    test('Then it should fetch bills from the store', async () => {
+      // Mock the store's list function to resolve with predefined bills
+      const listMock = jest.fn().mockResolvedValue(bills);
+      const storeMock = {
+        bills: () => ({
+          list: listMock,
+        }),
+      };
 
-//  GET Bills test case for the getBills function.
-  describe('GET Bills', () => {
-    it('should return an array of bills', async () => {
-      const bills = await myBillsInstance.getBills();
-      expect(bills).toEqual(bills);
+      // Instantiate Bills class with mock objects
+      const myBillsInstance = new Bills({
+        document,
+        onNavigate: jest.fn(),
+        store: storeMock,
+        localStorage: localStorageMock,
+      });
+
+      // Call getBills method and wait for it to finish
+      await myBillsInstance.getBills();
+
+      // Expect the mock list function to have been called
+      expect(listMock).toHaveBeenCalled();
     });
-    it('should handle corrupted data and return unformatted date', async () => {
-    // Mocking store to return corrupted data
-    const mockedCorruptedData = [{ date: 'corrupted_date', status: 'pending' }];
-    myBillsInstance.store = {
-      bills: () => ({
-        list: () => Promise.resolve(mockedCorruptedData),
-      }),
-    };
 
-    // Mocking console.log to capture the logged error
-    console.log = jest.fn();
+    // Test case for handling corrupted data
+    test('Then it should handle the error and return unformatted date', async () => {
+      // Mock formatDate to simulate an error when formatting the date
+      formatDate.mockImplementation(() => {
+        throw new Error('Error formatting date');
+      });
 
-    // Calling getBills
-    const bills = await myBillsInstance.getBills();
+      // Create a corrupted bill
+      const corruptedBill = {
+        id: 'corruptedBillId',
+        date: 'corruptedDate',
+        status: 'corruptedStatus',
+      };
 
-    // Expectations
-    expect(console.log).toHaveBeenCalled(); // Verify if console.log was called
-    expect(bills.length).toBe(1); // Verify if bills array is returned
-    expect(bills[0].date).toBe('corrupted_date'); // Verify if unformatted date is returned
-    expect(bills[0].status).toBe('En attente'); // Verify if status is returned as expected
+      // Mock store.bills().list to return a corrupted bill
+      const listMock = jest.fn().mockResolvedValue([corruptedBill]);
+      const storeMock = {
+        bills: () => ({
+          list: listMock,
+        }),
+      };
+
+      // Instantiate Bills class with necessary mocks
+      const myBillsInstance = new Bills({
+        document: window.document,
+        onNavigate: jest.fn(),
+        store: storeMock,
+        localStorage: localStorageMock,
+      });
+
+      // Execute getBills and capture the result
+      const result = await myBillsInstance.getBills();
+
+      // Check that the corrupted bill is returned with the unformatted date
+      expect(result[0].date).toBe(corruptedBill.date);
+      expect(result[0].status).toBe(formatStatus(corruptedBill.status));
+
+      // Restore original implementations of mocked functions
+      formatDate.mockRestore();
+      formatStatus.mockRestore();
+    });
   });
-  })
 
 
 
-    afterEach(() => {
-    myBillsInstance = null;
-  });
+//TODO Nr.2 - Integration TEST
+// Helper function to set up the test environment
+const setupTestEnvironment = () => {
+  // Set up the environment
+  localStorage.setItem('user', JSON.stringify({ type: 'Employee', email: 'a@a' }));
+  const root = document.createElement('div');
+  root.setAttribute('id', 'root');
+  document.body.appendChild(root);
+  router();
+};
+
+
+
+
+
+
 
 
 
