@@ -21,14 +21,22 @@ export default class NewBill {
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
 
-    //BUG nr.3 [BUG Hunt] - Bills: Solution - filter the file format before submit
+    //BUG nr.3 [BUG Hunt] - Bills: There was no checking of file extension
+    // NOTE: Solution - filter the file format before submit
     // Check if the file extension is jpg, jpeg, or png
+    // Target the input where you add the file 
     const justificatifInput = this.document.querySelector(`input[data-testid="file"]`);
+    // List of accepted file extension/formats
     const validExtensions = ['jpg', 'jpeg', 'png'];
+    // obtaining the file extension
     const fileExtension = fileName.split('.').pop().toLowerCase();
+    // chech if the uploaded file has the correct extension
     if (!validExtensions.includes(fileExtension)) {
+        // set the error message
         justificatifInput.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
+        //returns true if the element's child controls satisfy their validation constraints
         justificatifInput.reportValidity();
+        //empties the input 
         justificatifInput.value = '';
         return;
     }

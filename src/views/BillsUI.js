@@ -52,19 +52,21 @@ export default ({
     return ErrorPage(error)
   }
 
-
+/////////////////
   // BUG nr.1 [Bug report] - Bills : Solution - sort the bills by date before returning them
-  //Observation : directly defining the sorting logic within the sort method <<<if (bills && bills.length) {bills.sort((a, b) => new Date(a.date) - new Date(b.date))>>> doesn't work as expected because it separates the sorting logic from the sorting operation itself.
+  // NOTE: directly defining the sorting logic within the sort method <<<if (bills && bills.length) {bills.sort((a, b) => new Date(a.date) - new Date(b.date))>>> doesn't work as expected because it separates the sorting logic from the sorting operation itself.
+
+  // compareDates is a function that takes two parameters a and b, which represent two elements from the array of bills (passed as a prop named data to the component). It calculates the difference between the dates of these two bill objects.
+  // if statement checks if the bills array exists and has at least one bill object. If so, it calls the sort() method on the bills array and passes the compareDates function as an argument. This will sort the bills in descending order based on their dates.
 
   // Sort bills by date (from earliest to latest) before rendering
   const compareDates = (a, b) => new Date(b.date) - new Date(a.date);
-
   if (bills && bills.length) {
     bills.sort(compareDates);
   } else {
     console.error('No bills available to display');
   }
-
+///////////////////
 
   return (`
     <div class='layout'>

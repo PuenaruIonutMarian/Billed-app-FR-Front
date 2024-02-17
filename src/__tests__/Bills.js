@@ -1,18 +1,17 @@
-
-
 /**
  * @jest-environment jsdom
  */
 
 import mockStore from '../__mocks__/store';
 import { localStorageMock } from '../__mocks__/localStorage.js';
-import { screen, waitFor } from '@testing-library/dom';
+import { screen, waitFor} from '@testing-library/dom';
 import BillsUI from '../views/BillsUI.js';
 import { bills } from '../fixtures/bills.js';
-import { ROUTES_PATH } from '../constants/routes.js';
+import { ROUTES_PATH, ROUTES } from '../constants/routes.js';
 import router from '../app/Router.js';
 import Bills from '../containers/Bills.js';
 import { formatDate, formatStatus } from '../app/format.js';
+import '@testing-library/jest-dom';
 
 // Reuse mocks for formatDate and formatStatus
 jest.mock('../app/format.js', () => ({
@@ -49,6 +48,8 @@ describe("Given I am connected as an employee", () => {
       //TODO nr.1
       // Checking whether the windowIcon element has a CSS class active-icon
       expect(windowIcon.classList.contains('active-icon')).toBe(true);
+      //OR
+      //expect(windowIcon).toHaveClass('active-icon');
     })
 
     test("Then bills should be ordered from earliest to latest", () => {
@@ -85,8 +86,10 @@ describe("Given I am connected as an employee", () => {
     });
 
     // //TODO  UNITARY TESTS
+    // FIXME the tests doesn't seem to apply for rows 13 to 33. The main problem seems to be the test for NewBill. But if I fix new bill the eye icons it's not ok, and after getBills it's not ok.
+    //NOTE: I have tried spyON, fireEvent,wait, waitFor, await waitFor plus async, separate statements from main the structure. NOTHING worked
 
-     // Test cases for interactions with buttons and icons
+    //  Test cases for interactions with buttons and icons
     describe('Interaction with "New Bill" button', () => {
       it('should have an event listener for click', () => {
         // Mock handleClickNewBill function
@@ -100,41 +103,40 @@ describe("Given I am connected as an employee", () => {
 
     describe('Interaction with "eye" icons', () => {
       it('should have an event listener for click', () => {
-        // Mock handleClickIconEye function
-        jQuery.fn.modal = () => {}; // Mock jQuery's modal function
+        // Mocking jQuery's modal function
+        jQuery.fn.modal = () => {};
+        // Spy on the handleClickIconEye function
+        const handleClickIconEyeSpy = jest.spyOn(myBillsInstance, 'handleClickIconEye');
+        // Query the eye icon
         const iconEye = document.querySelectorAll(`div[data-testid="icon-eye"]`);
         expect(iconEye).toBeDefined();
-        myBillsInstance.handleClickIconEye = jest.fn();
+        // Trigger click on the icon
         iconEye[0].click();
-        expect(myBillsInstance.handleClickIconEye).toHaveBeenCalled();
+        // Expect the original function to be called
+        expect(handleClickIconEyeSpy).toHaveBeenCalled();
       });
     });
+
 
     // Test suite for getBills function
     describe('When I call getBills', () => {
       it('should fetch bills from the store', async () => {
-        // Mock the store's list function to resolve with predefined bills
-        const listMock = jest.fn().mockResolvedValue(bills);
-        const storeMock = {
-          bills: () => ({
-            list: listMock,
-          }),
-        };
-
+        // Spy on the store's list function
+        const listMock = jest.spyOn(mockStore.bills(), 'list');
         // Instantiate Bills class with mock objects
         const myBillsInstance = new Bills({
           document,
           onNavigate: jest.fn(),
-          store: storeMock,
+          store: mockStore,
           localStorage: localStorageMock,
         });
-
         // Call getBills method and wait for it to finish
         await myBillsInstance.getBills();
-
-        // Expect the mock list function to have been called
+        // Expect the original list function to have been called
         expect(listMock).toHaveBeenCalled();
       });
+      
+
 
       // Test case for handling corrupted data
       it('should handle errors and return unformatted date in case of formatting failure', async () => {
