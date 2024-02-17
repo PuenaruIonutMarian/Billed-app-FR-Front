@@ -87,6 +87,34 @@ describe('Given I am connected as an employee', () => {
   });
 
 
+//  GET Bills test case for the getBills function.
+  describe('GET Bills', () => {
+    it('should return an array of bills', async () => {
+      const bills = await myBillsInstance.getBills();
+      expect(bills).toEqual(bills);
+    });
+    it('should handle corrupted data and return unformatted date', async () => {
+    // Mocking store to return corrupted data
+    const mockedCorruptedData = [{ date: 'corrupted_date', status: 'pending' }];
+    myBillsInstance.store = {
+      bills: () => ({
+        list: () => Promise.resolve(mockedCorruptedData),
+      }),
+    };
+
+    // Mocking console.log to capture the logged error
+    console.log = jest.fn();
+
+    // Calling getBills
+    const bills = await myBillsInstance.getBills();
+
+    // Expectations
+    expect(console.log).toHaveBeenCalled(); // Verify if console.log was called
+    expect(bills.length).toBe(1); // Verify if bills array is returned
+    expect(bills[0].date).toBe('corrupted_date'); // Verify if unformatted date is returned
+    expect(bills[0].status).toBe('En attente'); // Verify if status is returned as expected
+  });
+  })
 
 
 
