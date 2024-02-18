@@ -1,18 +1,19 @@
 /**
  * @jest-environment jsdom
  */
-
+// Import necessary functions and modules for testing
 import { screen, fireEvent } from "@testing-library/dom";
-import NewBillUI from "../views/NewBillUI.js";
-import NewBill from "../containers/NewBill.js";
-import { localStorageMock } from "../__mocks__/localStorage.js";
-import mockStore from "../__mocks__/store";
+import { ROUTES_PATH } from "../constants/routes.js"; // Importing route constants
+import NewBillUI from "../views/NewBillUI.js"; // Importing the NewBillUI component
+import NewBill from "../containers/NewBill.js"; // Importing the NewBill container
+import { localStorageMock } from "../__mocks__/localStorage.js"; // Importing mocked localStorage
+import mockStore from "../__mocks__/store"; // Importing mocked store
 
-
-
+// Describe block for testing the NewBill functionality when the user is connected as an employee
 describe("Given I am connected as an employee", () => {
+    // Describe block for testing the behavior when on the NewBill page
     describe("When I am on NewBill Page", () => {
-
+        // Before each test, set up the necessary environment
         beforeEach(() => {
             // Mocking localStorage to simulate the user being logged in
             Object.defineProperty(window, 'localStorage', { value: localStorageMock });
@@ -25,14 +26,18 @@ describe("Given I am connected as an employee", () => {
             document.body.innerHTML = html
         })
 
+        // After each test, clean up the environment
         afterEach(() => {
             document.body.innerHTML = '';
         });
 
+        // Mocking the onNavigate function
+        const onNavigate = jest.fn();
+
         // Test to check if the handleChangeFile() function is called when a file is added
         test("Then the handleChangeFile() function is called when a file is added", () => {
             // Creating a new instance of NewBill with necessary dependencies
-            const newBill = new NewBill({ document, onNavigate: {}, store: mockStore, localStorage: {} });
+            const newBill = new NewBill({ document, onNavigate, store: mockStore, localStorage: {} });
             // Mocking the handleChange function to track if it's called
             const handleChange = jest.fn((e) => newBill.handleChangeFile(e));
             // Getting the file input element by its data-testid attribute
@@ -42,7 +47,7 @@ describe("Given I am connected as an employee", () => {
             // Simulating a file being selected by firing a change event on the file input
             fireEvent.change(inputFile, {
                 target: {
-                    //creates a mock file object (File) with the name 'test.png' and type 'image/png'.
+                   //creates a mock file object (File) with the name 'test.png' and type 'image/png'.
                     files: [new File(['test'], 'test.png', { type: 'image/png' })] 
                 }
             });
@@ -52,12 +57,43 @@ describe("Given I am connected as an employee", () => {
             expect(inputFile.files[0].name).toBe('test.png');
         });
 
+         //Integration Test - POST
+        // Test to check if a new bill is added and the user is redirected to the bills page upon form submission
+        describe('When I am on NewBill Page, I fill the form and click submit', () => {
+            test("Then the bill is added and I am redirected to the bills page", () => {
+                // Creating a new instance of NewBill with necessary dependencies
+                const newBill = new NewBill({ document, onNavigate, store: mockStore, localStorage: {} });
+                // Simulate the info inside the form
+                const typeInput = screen.getByTestId('expense-type');
+                const nameInput = screen.getByTestId('expense-name');
+                const amountInput = screen.getByTestId('amount');
+                const dateInput = screen.getByTestId('datepicker');
+                const vatInput = screen.getByTestId('vat');
+                const pctInput = screen.getByTestId('pct');
+                const commentaryInput = screen.getByTestId('commentary');
+                const file = screen.getByTestId("file");
 
+                // Simulating user input for each form field
+                fireEvent.change(typeInput, { target: { value: 'Transports' } });
+                fireEvent.change(nameInput, { target: { value: 'Vol Paris Berlin' } });
+                fireEvent.change(amountInput, { target: { value: '123' } });
+                fireEvent.change(dateInput, { target: { value: '2023-12-20' } });
+                fireEvent.change(vatInput, { target: { value: '70' } });
+                fireEvent.change(pctInput, { target: { value: '20' } });
+                fireEvent.change(commentaryInput, { target: { value: 'Test comment' } });
+                fireEvent.change(file, { target: { files: [ new File(["test"], "test.jpg", { type: "image/jpg" }) ] } });
 
-
-
-
-
-
-    });
+                // Getting the form element and adding a submit event listener to trigger handleSubmit
+                const newBillForm = screen.getByTestId("form-new-bill");
+                const handleSubmit = jest.fn((e) => newBill.handleSubmit(e))
+                newBillForm.addEventListener("submit", handleSubmit);
+                // Simulating form submission
+                fireEvent.submit(newBillForm);
+                // Expecting that the handleSubmit function is called
+                expect(handleSubmit).toHaveBeenCalled();
+                // Expecting that the onNavigate function is called with the correct route for Bills page
+                expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH.Bills);
+            });
+        });
+    });    
 });
