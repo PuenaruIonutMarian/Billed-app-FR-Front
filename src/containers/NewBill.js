@@ -16,36 +16,33 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
   handleChangeFile = e => {
-    e.preventDefault()
-    const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const filePath = e.target.value.split(/\\/g)
-    const fileName = filePath[filePath.length-1]
+    e.preventDefault();
+    const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
 
     //BUG nr.3 [BUG Hunt] - Bills: There was no checking of file extension
     // NOTE: Solution - filter the file format before submit
-    // Check if the file extension is jpg, jpeg, or png
-    // Target the input where you add the file 
+
+    // Select the file input element
     const justificatifInput = this.document.querySelector(`input[data-testid="file"]`);
-    // List of accepted file extension/formats
-    const validExtensions = ['jpg', 'jpeg', 'png'];
-    // obtaining the file extension
-    const fileExtension = fileName.split('.').pop().toLowerCase();
-    // chech if the uploaded file has the correct extension
-    if (!validExtensions.includes(fileExtension)) {
-        // set the error message
-        justificatifInput.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
-        //returns true if the element's child controls satisfy their validation constraints
-        justificatifInput.reportValidity();
-        //empties the input 
-        justificatifInput.value = '';
-        return;
-    }
+//creating a regular expression object with "i" - the flag for case-insensitive matching (ex:jpG, jPeG, PnG)
+    const regexExtensionFile = new RegExp(`(jpg|jpeg|png)`, "i");
+        // Check if the file extension is jpg, jpeg, or png
+    if (!regexExtensionFile.test(file.name)) {
+      // Set custom validity message for invalid file format
+      justificatifInput.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
+      // Clear the file input value
+      e.target.value = "";
+      return;
+    }else{
 
+    const filePath = e.target.value.split(/\\/g);
+    const fileName = filePath[filePath.length-1];
 
-    const formData = new FormData()
+    const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email
-    formData.append('file', file)
-    formData.append('email', email)
+
+    formData.append('file', file);
+    formData.append('email', email);
 
     this.store
       .bills()
@@ -61,7 +58,7 @@ export default class NewBill {
         this.fileUrl = fileUrl
         this.fileName = fileName
       }).catch(error => console.error(error))
-  }
+  }}
   handleSubmit = e => {
     e.preventDefault()
     console.log('e.target.querySelector(`input[data-testid="datepicker"]`).value', e.target.querySelector(`input[data-testid="datepicker"]`).value)
