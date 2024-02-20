@@ -20,18 +20,16 @@ export default class NewBill {
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0];
 
     //BUG nr.3 [BUG Hunt] - Bills: There was no checking of file extension
-    // NOTE: Solution - filter the file format before submit
+    // NOTE: Solution - filter the file format before submitting
 
-    // Select the file input element
-    const justificatifInput = this.document.querySelector(`input[data-testid="file"]`);
-//creating a regular expression object with "i" - the flag for case-insensitive matching (ex:jpG, jPeG, PnG)
-    const regexExtensionFile = new RegExp(`(jpg|jpeg|png)`, "i");
-        // Check if the file extension is jpg, jpeg, or png
+    //regular expression with "i"flag for case-insensitive matching (ex:jpG, jPeG, PnG)
+    const regexExtensionFile = /\.(jpg|jpeg|png)$/i; 
+    // Check if the file extension is jpg, jpeg, or png
     if (!regexExtensionFile.test(file.name)) {
       // Set custom validity message for invalid file format
-      justificatifInput.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
+      e.target.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
       // Display custom validity message
-      justificatifInput.reportValidity();
+      e.target.reportValidity();
       // Clear the file input value
       e.target.value = "";
       return;

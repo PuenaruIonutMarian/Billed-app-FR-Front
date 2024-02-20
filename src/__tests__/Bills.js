@@ -85,9 +85,7 @@ describe("Given I am connected as an employee", () => {
       myBillsInstance = null;
     });
 
-    // //TODO  UNITARY TESTS
-    // FIXME the tests doesn't seem to apply for rows 13 to 33. The main problem seems to be the test for NewBill. But if I fix new bill the eye icons it's not ok, and after getBills it's not ok.
-    //NOTE: I have tried spyON, fireEvent,wait, waitFor, await waitFor plus async, separate statements from main the structure. NOTHING worked
+    //TODO  UNITARY TESTS
 
     //  Test cases for interactions with buttons and icons
     describe('Interaction with "New Bill" button', () => {
