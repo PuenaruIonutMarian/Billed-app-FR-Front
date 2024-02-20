@@ -14,7 +14,7 @@ import NewBill from "../containers/NewBill.js";
 import {
   localStorageMock
 } from "../__mocks__/localStorage.js";
-import mockStore from "../__mocks__/store";
+import mockStore from "../__mocks__/store.js";
 
 
 

@@ -30,6 +30,8 @@ export default class NewBill {
     if (!regexExtensionFile.test(file.name)) {
       // Set custom validity message for invalid file format
       justificatifInput.setCustomValidity('Invalid file format. Please upload a file with extension jpg, jpeg, or png.');
+      // Display custom validity message
+      justificatifInput.reportValidity();
       // Clear the file input value
       e.target.value = "";
       return;
