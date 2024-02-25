@@ -63,7 +63,7 @@ describe("Given I am connected as an employee", () => {
       // Simulating a file being selected by firing a change event on the file input
       fireEvent.change(inputFile, {
         target: {
-          //creates a mock file object (File) with the name 'test.png' and type 'image/png'.
+          //Create a mock file object (File) with the name 'test.png' and type 'image/png'.
           files: [new File(['test'], 'test.png', {
             type: 'image/png'
           })]

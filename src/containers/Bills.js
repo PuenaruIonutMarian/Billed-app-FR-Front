@@ -20,8 +20,6 @@ export default class {
     this.onNavigate(ROUTES_PATH['NewBill'])
   }
 
-  //write a test case for handleClickNewBill
-
   handleClickIconEye = (icon) => {
     const billUrl = icon.getAttribute("data-bill-url")
     const imgWidth = Math.floor($('#modaleFile').width() * 0.5)

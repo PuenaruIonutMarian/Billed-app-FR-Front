@@ -40,7 +40,7 @@ export default class Login {
   handleSubmitAdmin = e => {
     e.preventDefault()
 
-    //BUG nr.2 [Bug report] - Login: Not being able to sign in as an admin is because of the miss targeting the right inputs
+    //BUG nr.2 [Bug report] - Login: si un administrateur remplit correctement les champs du Login, il devrait naviguer sur la page Dashboard
     // NOTE: Solution - replace employee with admin ... -email-input / -password-input
 
     const user = {

@@ -145,9 +145,8 @@ export default class {
       this.counter ++
     }
 
-    //BUG nr.4 [Bug Hunt] - Dashboard : Solution -  unbound all click events for each bill and then immediately rebound them with the event handler
-    //NOTE: basically after each unwrapping of the category an event listener is launched and if you do it for two time's in a row you'll have two event listeners that are doing the same thing in different moments that's causing the click not to work. The event listener is listening to see if the  bill is handled or not But if you have two events or more you'll make them fight over the state.
-    //off() method is used to remove the previous event handler attached
+    //BUG nr.4 [Bug Hunt] - Dashboard :  je ne peux plus sélectionner un ticket de la première liste.
+    //NOTE: Solution -  unbound all click events for each bill and then immediately rebound them with the event handler.
     bills.forEach((bill) => {
       $(`#open-bill${bill.id}`).off('click').click((e) =>
         this.handleEditTicket(e, bill, bills)

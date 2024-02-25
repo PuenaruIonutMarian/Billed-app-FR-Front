@@ -45,11 +45,8 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills)
       await waitFor(() => screen.getByTestId('icon-window'))
       const windowIcon = screen.getByTestId('icon-window')
-      //TODO nr.1
       // Checking whether the windowIcon element has a CSS class active-icon
       expect(windowIcon.classList.contains('active-icon')).toBe(true);
-      //OR
-      //expect(windowIcon).toHaveClass('active-icon');
     })
 
     test("Then bills should be ordered from earliest to latest", () => {
@@ -61,9 +58,6 @@ describe("Given I am connected as an employee", () => {
     })
   })
 
-
-
-//TODO Nr.2 CONTAINER / BILLS 
 
   // Test suite for interactions on the Bills Page
   describe('Given I am connected as an employee', () => {
@@ -85,7 +79,7 @@ describe("Given I am connected as an employee", () => {
       myBillsInstance = null;
     });
 
-    //TODO  UNITARY TESTS
+    // UNITARY TESTS
 
     //  Test cases for interactions with buttons and icons
     describe('Interaction with "New Bill" button', () => {
@@ -179,7 +173,7 @@ describe("Given I am connected as an employee", () => {
       });
     });
 
-    //TODO  Integration TEST
+    //Integration TEST
 
     // Test suite for GET Bills API call
     describe('When I navigate to Bills', () => {
